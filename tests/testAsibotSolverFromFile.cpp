@@ -422,6 +422,33 @@ TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKin5)
     ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
 }
 
+TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKinEE1)
+{
+    std::vector<double> xd(5), qGuess(5, 0.0), q;
+
+    xd[0] = -0.494974747;  //-- x
+    xd[1] = 0.0;  //-- y
+    xd[2] = -0.205025254;  //-- z
+    xd[3] = -45.0;  //-- oyP
+    xd[4] = 0.0;  //-- ozPP
+
+    // forces FORWARD UP, compare with AsibotSolverSetLimits
+    qGuess[2] = 90.0;
+
+    // TODO: this conversion messes the YZ angles up
+    ASSERT_TRUE(KinRepresentation::encodePose(xd, xd, coordinate_system::CARTESIAN, orientation_system::EULER_YZ, angular_units::DEGREES));
+
+    ASSERT_TRUE(iCartesianSolver->invKin(xd, qGuess, q, ICartesianSolver::TCP_FRAME));
+
+    ASSERT_EQ(q.size(), 5);  //-- NUM_MOTORS
+
+    ASSERT_NEAR(q[0], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[1], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[2], 45.0, EPS_JOINT);
+    ASSERT_NEAR(q[3], 0.0, EPS_JOINT);
+    ASSERT_NEAR(q[4], 0.0, EPS_JOINT);
+}
+
 TEST_F(AsibotSolverTestFromFile, AsibotSolverInvKinTool)
 {
     std::vector<double> xd(5), qGuess(5, 0.0), tool(6), q;
